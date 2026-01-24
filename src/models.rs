@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
@@ -14,7 +15,7 @@ pub struct Meta {
 #[derive(Deserialize, Debug)]
 pub struct WordData {
     pub slug: String,
-    pub is_common: bool,
+    pub is_common: Option<bool>,
     pub tags: Vec<String>,
     pub jlpt: Vec<String>,
     pub japanese: Vec<JapaneseSource>,
@@ -26,19 +27,20 @@ pub struct WordData {
 pub struct Sense {
     pub english_definitions: Vec<String>,
     pub parts_of_speech: Vec<String>,
-    pub links: Vec<Link>, 
+    pub links: Vec<Link>,
     pub tags: Vec<String>,
     pub restrictions: Vec<String>,
     pub see_also: Vec<String>,
     pub antonyms: Vec<String>,
     pub source: Vec<String>,
-    pub info: Vec<String>
+    pub info: Vec<String>,
+    pub sentences: Option<serde_json::Value>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct JapaneseSource {
     pub word: Option<String>,
-    pub reading: String,
+    pub reading: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -59,12 +61,7 @@ impl JishoResponse {
         let url = format!("https://jisho.org/api/v1/search/words?keyword={}", keyword);
 
         let client = reqwest::Client::new();
-        let response = client
-            .get(url)
-            .send()
-            .await?
-            .json::<Self>()
-            .await?;
+        let response = client.get(url).send().await?.json::<Self>().await?;
 
         Ok(response)
     }

@@ -4,7 +4,7 @@ mod models;
 
 #[tokio::main]
 async fn main() {
-    match JishoResponse::search("hito").await {
+    match JishoResponse::search("ohayou").await {
         Ok(res) => {
             for word in res.data {
                 println!("Word: {}", word.slug);
