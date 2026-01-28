@@ -1,10 +1,16 @@
 use crate::models::WordData;
 use ratatui::widgets::ListState;
 
+pub enum InputMode {
+    Normal,
+    Editing,
+}
+
 pub struct App {
     pub results: Vec<WordData>,
     pub list_state: ListState,
     pub input: String,
+    pub input_mode: InputMode,
 }
 
 impl App {
@@ -18,6 +24,7 @@ impl App {
             results,
             list_state,
             input: String::new(),
+            input_mode: InputMode::Normal,
         }
     }
 
