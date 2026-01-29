@@ -65,6 +65,8 @@ async fn run_app(
                 Focus::WordDetails => match key.code {
                     KeyCode::Tab => app.next_focus(),
                     KeyCode::Char('q') => return Ok(()),
+                    KeyCode::Char('/') => app.focus = Focus::SearchBar,
+                    KeyCode::Esc => app.focus = Focus::ResultsList,
                     KeyCode::Down | KeyCode::Char('j') => {
                         app.scroll_down();
                     }
