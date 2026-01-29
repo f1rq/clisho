@@ -56,12 +56,21 @@ async fn run_app(
                 Focus::ResultsList => match key.code {
                     KeyCode::Tab => app.next_focus(),
                     KeyCode::Char('q') => return Ok(()),
-                    KeyCode::Down => app.next(),
-                    KeyCode::Up => app.previous(),
+                    KeyCode::Down | KeyCode::Char('j') => app.next(),
+                    KeyCode::Up | KeyCode::Char('k') => app.previous(),
+                    KeyCode::Enter => app.focus = Focus::WordDetails,
+                    KeyCode::Char('/') => app.focus = Focus::SearchBar,
                     _ => {}
                 },
                 Focus::WordDetails => match key.code {
                     KeyCode::Tab => app.next_focus(),
+                    KeyCode::Char('q') => return Ok(()),
+                    KeyCode::Down | KeyCode::Char('j') => {
+                        app.scroll_down();
+                    }
+                    KeyCode::Up | KeyCode::Char('k') => {
+                        app.scroll_up();
+                    }
                     _ => {}
                 },
             }

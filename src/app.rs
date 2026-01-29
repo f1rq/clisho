@@ -12,6 +12,7 @@ pub struct App {
     pub list_state: ListState,
     pub input: String,
     pub focus: Focus,
+    pub scroll: u16,
 }
 
 impl App {
@@ -26,6 +27,7 @@ impl App {
             list_state,
             input: String::new(),
             focus: Focus::ResultsList,
+            scroll: 0,
         }
     }
 
@@ -49,6 +51,7 @@ impl App {
             None => 0,
         };
         self.list_state.select(Some(i));
+        self.scroll = 0;
     }
 
     pub fn previous(&mut self) {
@@ -66,5 +69,14 @@ impl App {
             None => 0,
         };
         self.list_state.select(Some(i));
+        self.scroll = 0;
+    }
+
+    pub fn scroll_down(&mut self) {
+        self.scroll = self.scroll.saturating_add(1);
+    }
+
+    pub fn scroll_up(&mut self) {
+        self.scroll = self.scroll.saturating_sub(1);
     }
 }
