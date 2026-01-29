@@ -45,7 +45,11 @@ async fn run_app(
                         app.input.pop();
                     }
                     KeyCode::Esc => {
-                        app.focus = Focus::ResultsList;
+                        if app.input.is_empty() {
+                            app.focus = Focus::ResultsList
+                        } else {
+                            app.input.clear();
+                        }
                     }
                     _ => {}
                 },
