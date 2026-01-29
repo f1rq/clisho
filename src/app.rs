@@ -1,16 +1,17 @@
 use crate::models::WordData;
 use ratatui::widgets::ListState;
 
-pub enum InputMode {
-    Normal,
-    Editing,
+pub enum Focus {
+    SearchBar,
+    ResultsList,
+    WordDetails,
 }
 
 pub struct App {
     pub results: Vec<WordData>,
     pub list_state: ListState,
     pub input: String,
-    pub input_mode: InputMode,
+    pub focus: Focus,
 }
 
 impl App {
@@ -24,7 +25,15 @@ impl App {
             results,
             list_state,
             input: String::new(),
-            input_mode: InputMode::Normal,
+            focus: Focus::ResultsList,
+        }
+    }
+
+    pub fn next_focus(&mut self) {
+        self.focus = match self.focus {
+            Focus::SearchBar => Focus::ResultsList,
+            Focus::ResultsList => Focus::WordDetails,
+            Focus::WordDetails => Focus::SearchBar,
         }
     }
 

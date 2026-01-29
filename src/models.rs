@@ -32,7 +32,7 @@ pub struct Sense {
     pub restrictions: Vec<String>,
     pub see_also: Vec<String>,
     pub antonyms: Vec<String>,
-    pub source: Vec<String>,
+    pub source: Vec<Source>,
     pub info: Vec<String>,
     pub sentences: Option<serde_json::Value>,
 }
@@ -54,6 +54,12 @@ pub struct Attribution {
 pub struct Link {
     pub text: String,
     pub url: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Source {
+    pub language: String,
+    pub word: String,
 }
 
 impl JishoResponse {
