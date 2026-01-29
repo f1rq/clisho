@@ -66,9 +66,13 @@ pub fn render(f: &mut Frame, app: &mut App) {
         if let Some(word) = app.results.get(i) {
             let mut lines = vec![];
 
+            let hr = Line::from(vec![Span::styled(
+                "-".repeat(body_chunks[1].width as usize - 2),
+                Style::new().fg(Color::DarkGray),
+            )]);
+
             let kanji = word.japanese[0].word.as_deref().unwrap_or(&word.slug);
             let reading = word.japanese[0].reading.as_deref().unwrap_or("---");
-            let meaning = word.senses[0].english_definitions.join(", ");
 
             lines.push(
                 Line::from(vec![
@@ -89,6 +93,35 @@ pub fn render(f: &mut Frame, app: &mut App) {
                 .alignment(HorizontalAlignment::Center),
             );
 
+            lines.push(hr);
+            lines.push(Line::from(""));
+
+            let mut def_count = 1;
+
+            for sense in &word.senses {
+                if !sense.parts_of_speech.is_empty() {
+                    lines.push(Line::from(vec![
+                        Span::raw("  "),
+                        Span::styled(
+                            sense.parts_of_speech.join(", "),
+                            Style::new().fg(Color::DarkGray),
+                        ),
+                    ]));
+                }
+
+                let def_text = sense.english_definitions.join("; ");
+                lines.push(Line::from(vec![
+                    Span::styled(
+                        format!("  {}. ", def_count),
+                        Style::new().fg(Color::DarkGray),
+                    ),
+                    Span::raw(def_text),
+                ]));
+
+                def_count += 1;
+                lines.push(Line::from(""));
+            }
+
             Text::from(lines)
         } else {
             Text::from("Data error")
@@ -99,7 +132,8 @@ pub fn render(f: &mut Frame, app: &mut App) {
 
     let details_paragraph = Paragraph::new(details_content)
         .block(details_block)
-        .wrap(ratatui::widgets::Wrap { trim: true });
+        .wrap(ratatui::widgets::Wrap { trim: true })
+        .scroll((app.scroll, 0));
 
     f.render_widget(details_paragraph, body_chunks[1]);
 
