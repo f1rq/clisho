@@ -31,7 +31,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
     // --- Search bar ---
     let search_bar = Paragraph::new(app.input.as_str()).block(
         Block::default()
-            .title("Search")
+            .title(" Search ")
             .borders(Borders::ALL)
             .border_style(Style::new().fg(get_focus_border(Focus::SearchBar))),
     );
