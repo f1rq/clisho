@@ -57,8 +57,20 @@ pub fn render(f: &mut Frame, app: &mut App) {
     f.render_stateful_widget(list, body_chunks[0], &mut app.list_state);
 
     // --- Word block ---
+    let word_title = app
+        .list_state
+        .selected()
+        .and_then(|i| app.results.get(i))
+        .map(|word| {
+            format!(
+                " Word: {} ",
+                word.japanese[0].word.as_deref().unwrap_or(&word.slug)
+            )
+        })
+        .unwrap_or_else(|| " Word ".to_string());
+
     let word_block = Block::default()
-        .title(" Word ")
+        .title(word_title)
         .borders(Borders::ALL)
         .border_style(Style::new().fg(get_focus_border(Focus::Word)));
 
@@ -83,7 +95,6 @@ pub fn render(f: &mut Frame, app: &mut App) {
                 ));
                 tags_spans.push(Span::raw(" "));
             }
-
             for jlpt in &word.jlpt {
                 let tag = jlpt.replace("-", " ");
                 tags_spans.push(Span::styled(
@@ -92,7 +103,6 @@ pub fn render(f: &mut Frame, app: &mut App) {
                 ));
                 tags_spans.push(Span::raw(" "));
             }
-
             for tag in &word.tags {
                 if tag.starts_with("wanikani") {
                     let wanikani_tag = tag.replace("wanikani", "wanikani level ");
