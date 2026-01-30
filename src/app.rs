@@ -4,7 +4,7 @@ use ratatui::widgets::ListState;
 pub enum Focus {
     SearchBar,
     ResultsList,
-    WordDetails,
+    Word,
 }
 
 pub struct App {
@@ -34,8 +34,8 @@ impl App {
     pub fn next_focus(&mut self) {
         self.focus = match self.focus {
             Focus::SearchBar => Focus::ResultsList,
-            Focus::ResultsList => Focus::WordDetails,
-            Focus::WordDetails => Focus::SearchBar,
+            Focus::ResultsList => Focus::Word,
+            Focus::Word => Focus::SearchBar,
         }
     }
 

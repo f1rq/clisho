@@ -56,13 +56,13 @@ pub fn render(f: &mut Frame, app: &mut App) {
 
     f.render_stateful_widget(list, body_chunks[0], &mut app.list_state);
 
-    // --- Word details block ---
-    let details_block = Block::default()
-        .title(" Word Details ")
+    // --- Word block ---
+    let word_block = Block::default()
+        .title(" Word ")
         .borders(Borders::ALL)
-        .border_style(Style::new().fg(get_focus_border(Focus::WordDetails)));
+        .border_style(Style::new().fg(get_focus_border(Focus::Word)));
 
-    let details_content = if let Some(i) = app.list_state.selected() {
+    let word_content = if let Some(i) = app.list_state.selected() {
         if let Some(word) = app.results.get(i) {
             let mut lines = vec![];
 
@@ -73,6 +73,36 @@ pub fn render(f: &mut Frame, app: &mut App) {
 
             let kanji = word.japanese[0].word.as_deref().unwrap_or(&word.slug);
             let reading = word.japanese[0].reading.as_deref().unwrap_or("---");
+
+            let mut tags_spans = vec![];
+
+            if let Some(true) = word.is_common {
+                tags_spans.push(Span::styled(
+                    "common word",
+                    Style::new().bg(Color::Green).fg(Color::Black),
+                ));
+                tags_spans.push(Span::raw(" "));
+            }
+
+            for jlpt in &word.jlpt {
+                let tag = jlpt.replace("-", " ");
+                tags_spans.push(Span::styled(
+                    format!(" {} ", tag),
+                    Style::new().bg(Color::LightBlue).fg(Color::White),
+                ));
+                tags_spans.push(Span::raw(" "));
+            }
+
+            for tag in &word.tags {
+                if tag.starts_with("wanikani") {
+                    let wanikani_tag = tag.replace("wanikani", "wanikani level ");
+                    tags_spans.push(Span::styled(
+                        format!(" {} ", wanikani_tag),
+                        Style::new().bg(Color::LightBlue).fg(Color::White),
+                    ));
+                    tags_spans.push(Span::raw(" "));
+                }
+            }
 
             lines.push(
                 Line::from(vec![
@@ -94,7 +124,10 @@ pub fn render(f: &mut Frame, app: &mut App) {
             );
 
             lines.push(hr);
-            lines.push(Line::from(""));
+
+            if !tags_spans.is_empty() {
+                lines.push(Line::from(tags_spans).alignment(HorizontalAlignment::Right));
+            }
 
             let mut def_count = 1;
 
@@ -130,12 +163,12 @@ pub fn render(f: &mut Frame, app: &mut App) {
         Text::from("No word selected.")
     };
 
-    let details_paragraph = Paragraph::new(details_content)
-        .block(details_block)
+    let word_paragraph = Paragraph::new(word_content)
+        .block(word_block)
         .wrap(ratatui::widgets::Wrap { trim: true })
         .scroll((app.scroll, 0));
 
-    f.render_widget(details_paragraph, body_chunks[1]);
+    f.render_widget(word_paragraph, body_chunks[1]);
 
     if let Focus::SearchBar = app.focus {
         f.set_cursor_position((
